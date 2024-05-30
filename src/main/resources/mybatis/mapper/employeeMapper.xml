@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dreamland.prj.mapper.EmployeeMapper">
+
+  <select id="getEmployeeByMap"
+          parameterType="String"
+          resultType="EmployeeDto">
+    SELECT EMP_NO, EMP_NAME, BIRTH, ENTER_DATE, EMAIL, RESIGN_DATE, MOBILE
+         , ADDRESS, DETAIL_ADDRESS, PASSWORD, DAY_OFF, PROFILE_PATH, USED_DAY_OFF
+         , SIGN_PATH, DEPT_NO, POS_NO, ROLE, POSTCODE
+      FROM EMPLOYEE
+    <where>
+      <if test="email!=null">EMAIL = #{email}</if>
+    </where>
+  </select>
+
+  <insert id="insertEmployee"
+          parameterType="EmployeeDto">
+    <selectKey order="BEFORE" keyProperty="empNo" resultType="int">
+      SELECT EMP_SEQ.NEXTVAL
+        FROM DUAL
+    </selectKey>
+    INSERT INTO EMPLOYEE (
+        EMP_NO
+      , EMP_NAME
+      , BIRTH
+      , ENTER_DATE
+      , EMAIL
+      , RESIGN_DATE
+      , MOBILE
+      , ADDRESS
+      , DETAIL_ADDRESS
+      , PASSWORD
+      , DAY_OFF
+      , PROFILE_PATH
+      , USED_DAY_OFF
+      , SIGN_PATH
+      , DEPT_NO
+      , POS_NO
+      , ROLE
+      , POSTCODE
+    ) VALUES (
+        #{empNo}
+      , #{empName}
+      , #{birth}
+      , #{enterDate}
+      , #{email}
+      , NULL
+      , #{mobile}
+      , NULL
+      , NULL
+      , #{password}
+      , 15
+      , #{profilePath}
+      , 0
+      , NULL
+      , #{deptNo}
+      , #{posNo}
+      , #{role}
+      , NULL
+    )  
+  </insert>
+
+  <delete id="deleteEmployee">
+    DELETE
+      FROM EMPLOYEE
+     WHERE EMP_NO = #{empNo}
+  </delete>
+  
+  <select id="getDeptNameByDeptNo"
+          parameterType="int"
+          resultType="String">
+    SELECT DEPT_NAME
+      FROM DEPARTMENT
+     WHERE DEPT_NO = #{deptNo}
+  </select>
+  
+  <select id="getPosNameByPosNo"
+          parameterType="int"
+          resultType="String">
+    SELECT POS_NAME
+      FROM POSITION
+     WHERE POS_NO = #{posNo}
+  </select>
+  
+  <update id="updateUserInfo"
+          parameterType="EmployeeDto">
+    UPDATE EMPLOYEE
+       SET EMP_NAME = #{empName}
+         , BIRTH = #{birth}
+         , MOBILE = #{mobile}
+         , POSTCODE = #{postcode}
+         , ADDRESS = #{address}
+         , DETAIL_ADDRESS = #{detailAddress}
+         , PROFILE_PATH = #{profilePath}
+         , SIGN_PATH = #{signPath}
+     WHERE EMAIL = #{email}
+  </update>
+
+
+</mapper>

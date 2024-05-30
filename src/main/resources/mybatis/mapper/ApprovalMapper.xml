@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.dreamland.prj.mapper.ApprovalMapper">
+
+   <resultMap type="ApprovalDto" id="ApprovalMap">
+     <id     property="apvNo"    column="APV_NO" />
+     <result property="empNo"       column="EMP_NO"/>
+     <result property="apvWriteDate"    column="APV_WRITE_DATE"/>
+     <result property="apvCheck"    column="APV_CHECK"/>
+     <result property="apvKinds"    column="APV_KINDS"/>
+     <result property="apvTitle"       column="APV_TITLE"/>
+   </resultMap>
+
+	 <select id="getApvNo"
+	 				  resultType="int">
+	 	SELECT MAX(APV_NO) 
+	 	  FROM APPROVAL
+	 </select>
+
+   <insert id="insertApproval"
+          parameterType="ApprovalDto">
+    INSERT INTO APPROVAL (
+        APV_NO
+      , APV_TITLE 
+      , EMP_NO
+      , APV_WRITE_DATE
+      , APV_KINDS
+    ) VALUES (
+        APV_SEQ.NEXTVAL
+      , #{apvTitle}    
+      , #{empNo}
+      , CURRENT_DATE
+      , #{apvKinds}
+    )
+  </insert>
+  
+  <insert id="insertApvWriter"
+          parameterType="ApvWriterDto">
+    INSERT INTO APV_WRITER (
+        APV_NO
+      , APV_STATE
+      , WRITER_LIST
+      , EMP_NO
+    ) VALUES (
+        #{apvNo}
+      , 100
+      , #{writerList}
+      , #{empNo}
+    )
+  </insert>
+
+ 
+  <insert id="insertApvLetter"
+          parameterType="AppletterDto">
+    INSERT INTO APV_LETTER (
+        LETTER_NO
+      , APV_NO
+      , LETTER_DETAIL
+    ) VALUES (
+        LETTER_SEQ.NEXTVAL
+      , #{apvNo}
+      , #{letterDetail}
+    )
+  </insert>
+  
+  <insert id="insertApvLeave"
+          parameterType="AppleaveDto">
+    INSERT INTO APV_LEAVE (
+        LEAVE_NO
+      , APV_NO
+      , LEAVE_CLASSIFY
+      , LEAVE_START
+      , LEAVE_END
+      , LEAVE_DETAIL
+      
+    ) VALUES (
+        LEAVE_SEQ.NEXTVAL
+      , #{apvNo}
+      , #{leaveClassify}
+      , #{leaveStart}
+      , #{leaveEnd}
+    )
+  </insert>
+  
+  <select id="getApvCount">
+    SELECT COUNT(*)
+      FROM APPROVAL
+  </select>
+
+  <select id="getApvList"
+          parameterType="Map"
+          resultMap="ApprovalMap">
+   <if test="1==1">
+    SELECT APV_NO, EMP_NO, APV_WRITE_DATE, APV_CHECK, APV_KINDS, APV_TITLE
+      FROM (SELECT ROW_NUMBER() OVER (ORDER BY APV_NO ${sort}) AS RN
+                 , APV_NO, EMP_NO, APV_WRITE_DATE, APV_CHECK, APV_KINDS, APV_TITLE 
+              FROM APPROVAL)
+     WHERE RN BETWEEN #{begin} AND #{end}
+     </if>  
+  </select>
+ 
+
+  
+</mapper>
